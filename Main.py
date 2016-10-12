@@ -1,3 +1,4 @@
+import operator
 from RiotAPI import RiotAPI
 import RiotConsts as Consts
 
@@ -25,7 +26,7 @@ def main():
     elif (choice == 5):
         region = Consts.REGIONS['brazil']
 
-    api = RiotAPI(Consts.KEY, region)
+    api = RiotAPI(Consts.KEY, False, region)
 
     summoner = raw_input("Enter your summoner name: ")
     summoner = summoner.replace(" ", "")
@@ -33,6 +34,7 @@ def main():
 
     r = api.get_summoner_by_name(summoner)
     sumID = r[summoner.lower()]['id']
+    # print sumID
 
     if(r[summoner.lower()]['summonerLevel']==30):
         league = api.get_league_by_id(sumID)
@@ -63,6 +65,24 @@ def main():
                                           winRate=winRate, leaguePoints=leaguePoints)
 
     # print league[str(sumID)][0]
+
+    champStats = api.get_stats_by_id(sumID)['champions']
+
+    gamesPlayed = []
+
+    # for champs in champStats:
+        # print 'ID: {id} \n' \
+              # 'Games Played: {played} \n'.format(id=champs['id'],
+                                                 # played=champs['stats']['totalSessionsPlayed'])
+    for champs in champStats:
+        gamesPlayed.append((champs['id'], champs['stats']['totalSessionsPlayed']))
+
+    sortedGamesPlayed = sorted(gamesPlayed, key=lambda champ: champ[1], reverse=True)
+    # for champs in sortedGamesPlayed:
+        # print champs
+
+
+
 
 
 def region_menu():
