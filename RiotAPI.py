@@ -29,5 +29,13 @@ class RiotAPI(object):
             names=name
             )
         return self._request(api_url)
+
+    def get_league_by_id(self, id):
+        api_url = Consts.URL['league_by_summoner'].format(
+            version=Consts.API_VERSIONS['league'],
+            ids=id
+        )
+        return self._request(api_url)
+
         
                                                       
