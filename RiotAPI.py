@@ -33,9 +33,9 @@ class RiotAPI(object):
             )
             #print response.url
 
-        if(response.status_code!=200):
-            print 'ERROR: Summoner Not Found'
-            exit()
+       # if(response.status_code!=200):
+          #  print 'ERROR: Summoner Not Found'
+           # exit()
 
         return response.json()
 
@@ -64,6 +64,6 @@ class RiotAPI(object):
     def get_champ_by_id(self, id):
         api_url = Consts.URL['champion_by_id'].format(
             version=Consts.API_VERSIONS['champion'],
-            ids=id
+            id=id
         )
         return self._request(api_url)
