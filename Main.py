@@ -9,7 +9,12 @@ def main():
     region_menu()
 
     while (True):
-        choice = input('Enter the number of your region (1-5): ')
+        try:
+            choice = int(input('Enter the number of your region (1-5): '))
+        except NameError:
+            print 'Enter a anumber (1-5)'
+            continue
+
         if (1 <= choice <= 5):
             break
         else:
@@ -36,7 +41,12 @@ def main():
     print
 
     r = api.get_summoner_by_name(summoner)
-    sumID = r[summoner.lower()]['id']
+
+    try:
+        sumID = r[summoner.lower()]['id']
+    except KeyError:
+        print 'Summoner does not exist'
+        quit()
     # print sumID
 
     if(r[summoner.lower()]['summonerLevel']==30):
@@ -67,18 +77,13 @@ def main():
           "Win Rate: %{winRate}\n".format(name=name, tier=tier, division=division,
                                           winRate=winRate, leaguePoints=leaguePoints)
 
-    # print league[str(sumID)][0]
-
     champStats = api.get_stats_by_id(sumID)['champions']
 
     gamesPlayed = []
 
-    # for champs in champStats:
-        # print 'ID: {id} \n' \
-              # 'Games Played: {played} \n'.format(id=champs['id'],
-                                                 # played=champs['stats']['totalSessionsPlayed'])
     for champs in champStats:
-        gamesPlayed.append([champs['id'], champs['stats']['totalSessionsPlayed']])
+        gamesPlayed.append([champs['id'], champs['stats']['totalSessionsPlayed'],
+                            (float(champs['stats']['totalSessionsWon'])/float(champs['stats']['totalSessionsPlayed']))])
 
     sortedGamesPlayed = sorted(gamesPlayed, key=lambda champ: champ[1], reverse=True)
 
@@ -87,39 +92,33 @@ def main():
         if(champ[0]!=0):
             champ[0] = champDict[str(champ[0])]
 
-    print sortedGamesPlayed
-    #while idx < len(sortedGamesPlayed):
-        #print sortedGamesPlayed[idx]
-        #sortedGamesPlayed[idx][0] = champDict[sortedGamesPlayed[idx][0]]
+    sortedWinPercent = sorted(gamesPlayed, key=lambda champ: champ[2], reverse=True)
 
-        # Replaces the champion id with a champion name
-        # In the future, only access the static info once to compile a dictionary of champ id's/names
-        # print sortedGamesPlayed[idx][0]
-        #idx += 1
+
 
     #update_champs(staticAPI)  # Only needs to be called if ids change
 
 
-    #print 'Top 3 Most Played Champions:'
+    print 'Top 3 Most Played Champions:'
 
     idx = 1
-    #while idx < 4:
-        #print '{idx}. {champ}  {games} played'.format(idx=idx, champ=sortedGamesPlayed[idx][0],
-                                                  #games=sortedGamesPlayed[idx][1])
-        #idx += 1
-    #print champStats
-    #print
-    # print len(sortedGamesPlayed)
-    # print staticAPI.get_champ_by_id(sortedGamesPlayed[1][0])['name']
-    # print staticAPI.get_champ_by_id(sortedGamesPlayed[2][0])['name']
-    # print staticAPI.get_champ_by_id(sortedGamesPlayed[3][0])['name']
-    # print staticAPI.get_champ_by_id(sortedGamesPlayed[4][0])['name']
+    while idx < 4:
+        print '{idx}. {champ}  {games} played'.format(idx=idx, champ=sortedGamesPlayed[idx][0],
+                                                  games=sortedGamesPlayed[idx][1])
+        idx += 1
 
-    # print sortedGamesPlayed[1][0]
-    # sortedGamesPlayed[1][0] = staticAPI.get_champ_by_id(sortedGamesPlayed[1][0])['name']
-    # print sortedGamesPlayed[1][0]
-    # print champion['name']
-
+    print
+    print 'Top 3 Highest Win Rate: '
+    idx = 1
+    rank = 1
+    while(idx < 50 and rank < 4):
+        if(sortedWinPercent[idx][1]>=10):
+            print '{idx}. {champ}  %{rate} '.format(idx=rank, champ=sortedWinPercent[idx][0],
+                                                  rate=(round(100* sortedWinPercent[idx][2])))
+            idx += 1
+            rank += 1
+        else:
+            idx += 1
 
 def region_menu():
     print '1. North America \n' \
