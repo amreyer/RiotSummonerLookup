@@ -60,3 +60,10 @@ class RiotAPI(object):
             ids=id
         )
         return self._request(api_url)
+
+    def get_champ_by_id(self, id):
+        api_url = Consts.URL['champion_by_id'].format(
+            version=Consts.API_VERSIONS['champion'],
+            ids=id
+        )
+        return self._request(api_url)
